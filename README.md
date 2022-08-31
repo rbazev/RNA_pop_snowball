@@ -16,7 +16,9 @@ Kalirad A, Burch CL, & Azevedo RBR. [title]. *bioRxiv* doi: ??? .
 
 + runs.csv: data used by main.ipynb.
 
-+ fixation.csv: data used by main.ipynb.
++ rates.txt: data used by main.ipynb.
+
++ rates_seg.txt: data used by main.ipynb.
 
 
 _Note:_ the raw files required to generate the figures can be found at [Zenodo](10.5281/zenodo.7037892) .
