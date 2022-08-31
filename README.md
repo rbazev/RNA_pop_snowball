@@ -10,8 +10,6 @@ Kalirad A, Burch CL, & Azevedo RBR. [title]. *bioRxiv* doi: ??? .
 
 + RNA_pop_model.py: The model written in Python 2.7.
 
-+ RNA_pop_fixation_test.py: The code written in Python 2.7, used to generate Figure 5.
-
 + RNA_pop_model_demo.ipynb: ipython notebook illustrating the use of RNA_pop_model.py.  
 
 + main.ipynb: ipython notebook to generate Figures 3-6, and  miscellaneous results.  
