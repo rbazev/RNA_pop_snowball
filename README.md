@@ -1,4 +1,4 @@
-# RNA_pop_snowball
+# RNA pop snowball
 
 A model of sequence divergence on a holey fitness landscape based on RNA folding to simulate the accumulation of Dobzhansky-Muller incompatibilities (DMIs) in diverging populations.
 
