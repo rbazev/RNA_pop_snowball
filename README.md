@@ -20,6 +20,7 @@ Kalirad A, Burch CL, & Azevedo RBR. [title]. *bioRxiv* doi: ??? .
 
 + rates_seg.txt: data used by main.ipynb.
 
++ RI_assay: data used by main.ipynb.
 
 _Note:_ the raw files required to generate the figures can be found [here](https://doi.org/10.5281/zenodo.7037892) .
 
