@@ -19,3 +19,6 @@ Kalirad A, Burch CL, & Azevedo RBR. [title]. *bioRxiv* doi: ??? .
 + fixation.csv: data used by main.ipynb.
 
 
+_Note:_ the raw files required to generate the figures can be found at 10.5281/zenodo.7037892 .
+
+
