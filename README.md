@@ -4,7 +4,7 @@ A model of sequence divergence on a holey fitness landscape based on RNA folding
 
 Data and code associated with:
 
-Kalirad A, Burch CL, & Azevedo RBR. [title]. *bioRxiv* doi: ??? .
+Kalirad A, Burch CL, & Azevedo RBR. _Genetic drift promotes and recombination hinders speciation on a holey fitness landscape_. *bioRxiv* doi: https://doi.org/10.1101/2022.09.20.508707 .
 
 ## Contents:
 
