@@ -1,5 +1,15 @@
+"""
+A individual-based model of sequence divergence on a fitness landscape 
+based on RNA folding to simulate the accumulation of Dobzhansky-Muller 
+incompatibilities (DMIs) in diverging populations.
+"""
+
+__author__ = 'Ata Kalirad, Ricardo B. R. Azevedo'
+
+__version__ = '1.0'
+
 import time
-from copy import *
+from copy import deepcopy
 from itertools import *
 
 import numpy as np
@@ -22,6 +32,16 @@ rnd.seed()
 class Population(object):
     
     def __init__(self, ref_seq, pop_size, U_rate=1e-4, r_prob=0., alpha=12, w_min=0.7):
+        """Initialize Population object from reference RNA sequence, alpha, and w_min.
+
+        Args:
+            ref_seq (str): reference sequence
+            pop_size (int): N
+            U_rate (flort, optional): genomic muation rate. Defaults to 0.1.
+            r_prob (float or str, optional): recombination probability. Defaults to Free.
+            alpha (int, optional): alpha. Defaults to 12.
+            w_min (float, optional): The minimum fitness value for a viable genotype. Defaults to 0.7.
+        """
         self.pop_size = pop_size
         self.seq_L = len(ref_seq)
         mut_rate = U_rate/len(ref_seq)
@@ -43,6 +63,11 @@ class Population(object):
 
     @property
     def pop_fitness(self):
+        """Caculate the population fitness.
+
+        Returns:
+            float : population fitness
+        """
         pop_w = self.cal_pop_fitness(self.population)
         return np.round(np.mean(pop_w), decimals=3)
 
@@ -51,19 +76,11 @@ class Population(object):
         """Mutate RNA sequence at a single randomly chosen site to a randomly
         chosen nucleotide.
 
-        Note
-        ----
-        Does not calculate structure of mutant RNA sequence.
+        Args:
+            seq (str): sequence
 
-        Parameters
-        ----------
-        seq : str
-            Sequence.
-
-        Returns
-        -------
-        str
-            Mutant RNA sequence.
+        Returns:
+            str : Mutant RNA sequence.
         """
         site = np.random.randint(0, len(seq))
         nucl = [i for i in RNA_nucl if i != seq[site]]
@@ -72,6 +89,16 @@ class Population(object):
         
     @staticmethod
     def convertor(seq, inv=False):
+        """Convert a sting to int or vice versa.
+
+        Args:
+            seq (str): RNA sequence.
+            inv (bool, optional): if True takes a list of digits and converts it into a 
+            strings, else converts a string into a list of digits. Defaults to False.
+
+        Returns:
+            str or list
+        """
         if inv:
             dic = {0:'A', 1:'U', 2:'C', 3:'G'}
         else:
@@ -85,6 +112,15 @@ class Population(object):
             return temp
 
     def introgress(self, seqA, seqB):
+        """Construct all possible single introgressions.
+
+        Args:
+            seqA (array)
+            seqB (array)
+
+        Returns:
+            int : number of inviable single introgressions.
+        """
         single_introg = []
         for i in range(len(seqA)):
             if seqA[i] != seqB[i]:
@@ -97,6 +133,14 @@ class Population(object):
         return n_II
     
     def cal_fitness(self, array):
+        """Calculate the fintess of an RNA sequence.
+
+        Args:
+            array (array): a sequence represented as an array.
+
+        Returns:
+            float : fitness 
+        """
         key = self.convertor(array, inv=True)
         if key in fitness_dict:
             w = fitness_dict[key]
@@ -114,10 +158,20 @@ class Population(object):
         return w
         
     def update_neut_loci(self):
+        """Update the value of the unlinked neutral loci in the population.
+        """
         new_vals = np.random.normal(size=self.pop_size)
         self.population[:, -1] += new_vals
         
     def mutate_pop(self, pop): 
+        """Mutate the RNA sequences in the population
+
+        Args:
+            pop (numpy.ndarray): the population matrix.
+
+        Returns:
+            numpy.ndarray :  the mutated population matrix.
+        """
         pop_wo_nl = pop[:, :-1]
         neut_loc = pop[:,-1]
         mutation_mask = np.random.binomial(1, self.mut_rate, size=(pop_wo_nl.shape))
@@ -133,7 +187,18 @@ class Population(object):
         return mutated_pop
     
     def recombine_pop_single_cross(self, pop1, pop2, max_cross=False):
-        # ensure that pop1 and pop2 has already been shuffled, if not shuffle within this method
+        """"Recombine between two populations. Recombination 
+        probability (r_prob) determines if a randomly drawn sequence will recombine 
+        with another randomly drawn sequences. Only a single cross-over is allowed.
+
+        Args:
+            pop1 (numpy.ndarray) 
+            pop2 (numpy.ndarray) 
+            max_cross (bool, optional): If true, recombination frequency will be set at 1.0. Defaults to False.
+
+        Returns:
+            numpy.ndarray :  the recombined population matrix.
+        """
         np.random.shuffle(pop1)
         np.random.shuffle(pop2)
         pop_wo_nl1 = pop1[:, :-1]
@@ -158,6 +223,15 @@ class Population(object):
         return new_pop1
     
     def recombine_free(self, pop1, pop2):
+        """Recombine with multiple cross overs.
+
+        Args:
+            pop1 (numpy.ndarray) 
+            pop2 (numpy.ndarray) 
+
+        Returns:
+            numpy.ndarray :  the recombined population matrix.
+        """
         np.random.shuffle(pop1)
         np.random.shuffle(pop2)
         pop_wo_nl1 = pop1[:, :-1]
@@ -172,6 +246,15 @@ class Population(object):
         return recs_w_nl
     
     def cal_pop_fitness(self, pop, with_nl=True):
+        """Calculate the fitness of a population.
+
+        Args:
+            pop (numpy.ndarray): The population matrix
+            with_nl (bool, optional): If true, the last column of the matrix is removed. Defaults to True.
+
+        Returns:
+            numpy array: an array of fitness values.
+        """
         if with_nl:
             pop_wo_nl = pop[:, :-1]
         else:
@@ -190,6 +273,11 @@ class Population(object):
         return w_pop
     
     def generate_offspring(self):
+        """Generate offspring.
+
+        Returns:
+            numpy.ndarray :  the offspring population matrix.
+        """
         current_pop = deepcopy(self.population)
         if self.r_prob == 'Free':
             current_pop2 = deepcopy(current_pop)
@@ -203,6 +291,8 @@ class Population(object):
         return mutants
     
     def get_next_generation(self):
+        """Generate the next generation population matrix.
+        """
         w_sum = 0
         while w_sum == 0:
             next_gen = self.generate_offspring()
@@ -231,6 +321,15 @@ class Population(object):
     
     @staticmethod
     def generate_neighbours(input_array):
+        """Generate all the mutations needed to specify all single mutation
+        neighbors of a sequence.
+
+        Args:
+            input_array (numpy.ndarray
+
+        Returns:
+            numpy.ndarray : single-mutation neighbors
+        """
         array_length = len(input_array)
         differing_arrays = []
         for i in range(array_length):
@@ -253,6 +352,11 @@ class Population(object):
     
     @property
     def pop_robustness(self):
+        """Calculate the genetic robustness of the population
+
+        Returns:
+            float : the genetic robustness.
+        """
         if self.pop_size > 100:
             sample = deepcopy(self.population[:, :-1])
             np.random.shuffle(sample)
@@ -270,6 +374,15 @@ class Population(object):
         return np.round(nu, decimals=3)
     
     def get_IIs(self, pop1, pop2):
+        """Find incompatible introgressions
+
+        Args:
+            pop1 (numpy.ndarray) 
+            pop2 (numpy.ndarray) 
+
+        Returns:
+            float : the avergae number of incompatible introgressions.
+        """
         if self.pop_size > 100:
             sample1 = deepcopy(pop1[:, :-1])
             np.random.shuffle(sample1)
@@ -292,11 +405,10 @@ class TwoPops(object):
 
     def __init__(self, pop, burnin_t):
         """Initialize TwoPops object from Population.
-        
-        Parameters
-        ----------
-        pop : Population
-            An instance of Population object.
+
+        Args:
+            pop (Population): An instance of Population object.
+            burnin_t (int): The length of burnin phase.
         """
         self.init_pop = deepcopy(pop)
         self.pop1 = deepcopy(self.init_pop)
@@ -304,6 +416,18 @@ class TwoPops(object):
         self.burnin_t = burnin_t
 
     def get_RI(self):
+        """Calculate reproductive isolation between the two populations.
+
+        Returns:
+            Dictionary : RI: The level of reproductive isolation based on 
+                        the inviability of the single cross-over recombinants 
+                        according to recombination rate (r_prob).
+                         RI_max: The max level of reproductive isolation based 
+                                on the inviability of all the single cross-over 
+                                recombinants.
+                         RI_max_free:  The max level of reproductive isolation 
+                                    based on free recombination.
+        """
         RI = 0
         RI_max = 0
         RI_max_free = 0
@@ -333,14 +457,16 @@ class TwoPops(object):
 
     def get_genetic_variation(self, pop1, pop2):
         """Measure genetic variation in population.
-        
-        Returns
-        -------
-        Dictionary
-            HS: mean gene diversity within demes
-            HT: total gene diversity (pooling all demes)
-            GST: Nei's GST
-            D: Jost's D
+
+        Args:
+            pop1 (numpy.ndarray) 
+            pop2 (numpy.ndarray) 
+
+        Returns:
+            Dictionary: HS: mean gene diversity within demes
+                        HT: total gene diversity (pooling all demes)
+                        GST: Nei's GST
+                        D: Jost's D
         """
         H_within = []
         H_within.append(pop1.gene_diversity.mean())
@@ -363,6 +489,8 @@ class TwoPops(object):
             }
     
     def evolve_burnin(self):
+        """Evolve the population.
+        """
         var_n = []
         rob = []
         het = []
@@ -380,6 +508,13 @@ class TwoPops(object):
         self.burnin_output = pd.DataFrame.from_dict({'nu': rob, 'H': het})
         
     def diverge(self, target_D=0.1,  tot_sample=11, verbose=False):
+        """Evolve two divergent populations after equilibrium.
+
+        Args:
+            target_D (float, optional): The target level of divergence between two populations. Defaults to 0.3.
+            tot_sample (int, optional): The number of assays during divergence. Defaults to 11.
+            verbose (bool, optional): Print the save points. Defaults to False.
+        """
         output = pd.DataFrame()
         div = self.get_genetic_variation(self.pop1, self.pop2)
         curr_D = div['D']
