@@ -1,4 +1,4 @@
-# RNA pop snowball
+# HoleyPopulationSpeciation
 
 Models of sequence divergence based on Russian roulette and RNA folding to simulate the accumulation of Dobzhansky-Muller incompatibilities (DMIs) in diverging populations.
 
