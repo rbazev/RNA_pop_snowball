@@ -1,6 +1,6 @@
 # RNA pop snowball
 
-A model of sequence divergence on a holey fitness landscape based on RNA folding to simulate the accumulation of Dobzhansky-Muller incompatibilities (DMIs) in diverging populations.
+Models of sequence divergence on based on Russian roulette and RNA folding to simulate the accumulation of Dobzhansky-Muller incompatibilities (DMIs) in diverging populations.
 
 Data and code associated with:
 
@@ -14,4 +14,16 @@ Kalirad A, Burch CL, & Azevedo RBR. _Genetic drift promotes and recombination hi
 
 + RNA_holey.py: The RNA-folding model with holey fitness landscape written in Python 3.9.
 
++ main_figures.ipynb : ipython notebook to generate figures 5 - 9.
 
++ supp_figures.ipynb : ipython notebook to generate figures S1 and S2.
+
++ RR_results.csv : data used by main_figures.ipynb.
+
++ DFE.csv : data used by main_figures.ipynb.
+
++ RNA_q_results.csv : data used by main_figures.ipynb.
+
++ backcross.csv : data used by main_figures.ipynb.
+
++ RNA_holey_results : data used by supp_figures.ipynb.
